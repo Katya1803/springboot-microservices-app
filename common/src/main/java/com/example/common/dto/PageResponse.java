@@ -9,10 +9,6 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-/**
- * Pagination Response Wrapper
- * Wraps paginated data with metadata
- */
 @Data
 @Builder
 @NoArgsConstructor
@@ -20,49 +16,16 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PageResponse<T> {
 
-    /**
-     * List of items in current page
-     */
     private List<T> content;
-
-    /**
-     * Current page number (0-indexed)
-     */
     private int page;
-
-    /**
-     * Page size
-     */
     private int size;
-
-    /**
-     * Total number of elements
-     */
     private long totalElements;
-
-    /**
-     * Total number of pages
-     */
     private int totalPages;
 
-    /**
-     * Is this the first page?
-     */
     private boolean first;
-
-    /**
-     * Is this the last page?
-     */
     private boolean last;
-
-    /**
-     * Is page empty?
-     */
     private boolean empty;
 
-    /**
-     * Create PageResponse from Spring Data Page
-     */
     public static <T> PageResponse<T> of(Page<T> page) {
         return PageResponse.<T>builder()
                 .content(page.getContent())
