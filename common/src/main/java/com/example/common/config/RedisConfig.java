@@ -1,41 +1,53 @@
 package com.example.common.config;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis Configuration
- *
- * This config uses Spring Boot's auto-configuration for Redis connection.
- * Services using this should configure Redis in their application.yml:
- *
- * spring:
- *   data:
- *     redis:
- *       host: localhost
- *       port: 6379
- *       password:
- *       database: 0
- *
- * Spring Boot will automatically create RedisConnectionFactory bean.
- * We only customize RedisTemplate for JSON serialization.
+ * Configures Redis connection and RedisTemplate
  */
 @Configuration
-@ConditionalOnProperty(name = "spring.data.redis.host")
 public class RedisConfig {
+
+    @Value("${spring.data.redis.host:localhost}")
+    private String redisHost;
+
+    @Value("${spring.data.redis.port:6379}")
+    private int redisPort;
+
+    @Value("${spring.data.redis.password:}")
+    private String redisPassword;
+
+    @Value("${spring.data.redis.database:0}")
+    private int redisDatabase;
+
+    /**
+     * Redis Connection Factory
+     */
+    @Bean
+    public RedisConnectionFactory redisConnectionFactory() {
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
+        config.setHostName(redisHost);
+        config.setPort(redisPort);
+        config.setDatabase(redisDatabase);
+
+        if (redisPassword != null && !redisPassword.isEmpty()) {
+            config.setPassword(redisPassword);
+        }
+
+        return new LettuceConnectionFactory(config);
+    }
 
     /**
      * Redis Template with JSON serialization
-     *
-     * Spring Boot auto-configures RedisConnectionFactory based on
-     * spring.data.redis.* properties in application.yml
-     *
-     * We just customize the serialization strategy here.
      */
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
