@@ -5,6 +5,9 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- ========================================= -->
+    <!-- Parent: Spring Boot Starter Parent       -->
+    <!-- ========================================= -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -18,12 +21,18 @@
     <packaging>pom</packaging>
 
     <name>Build Parent</name>
-    <description>Parent POM with plugin management and enforcer rules</description>
+    <description>Parent POM with dependency management, plugin management, and enforcer rules</description>
 
+    <!-- ========================================= -->
+    <!-- Properties                                -->
+    <!-- ========================================= -->
     <properties>
+        <!-- Java Version -->
         <java.version>17</java.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+
+        <!-- Encoding -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -39,18 +48,12 @@
         <maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
     </properties>
 
+    <!-- ========================================= -->
+    <!-- Dependency Management (BOM)               -->
+    <!-- ========================================= -->
     <dependencyManagement>
         <dependencies>
-            <!-- Import Platform BOM -->
-            <dependency>
-                <groupId>com.example</groupId>
-                <artifactId>platform-bom</artifactId>
-                <version>${project.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- Spring Cloud BOM -->
+            <!-- ===== Spring Cloud BOM ===== -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -58,12 +61,42 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+
+            <!-- ===== JWT Dependencies ===== -->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-api</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-impl</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt-jackson</artifactId>
+                <version>${jjwt.version}</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- ===== Internal Modules ===== -->
+            <dependency>
+                <groupId>com.example</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
+    <!-- ========================================= -->
+    <!-- Plugin Management                         -->
+    <!-- ========================================= -->
     <build>
         <pluginManagement>
             <plugins>
+                <!-- Spring Boot Maven Plugin -->
                 <plugin>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
@@ -77,6 +110,7 @@
                     </configuration>
                 </plugin>
 
+                <!-- Maven Compiler Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -90,6 +124,9 @@
             </plugins>
         </pluginManagement>
 
+        <!-- ========================================= -->
+        <!-- Plugins (Applied to all children)         -->
+        <!-- ========================================= -->
         <plugins>
             <!-- Maven Enforcer Plugin -->
             <plugin>
@@ -104,9 +141,11 @@
                         </goals>
                         <configuration>
                             <rules>
+                                <!-- Require Maven 3.6.0+ -->
                                 <requireMavenVersion>
                                     <version>[3.6.0,)</version>
                                 </requireMavenVersion>
+                                <!-- Require Java 17+ -->
                                 <requireJavaVersion>
                                     <version>[17,)</version>
                                 </requireJavaVersion>
