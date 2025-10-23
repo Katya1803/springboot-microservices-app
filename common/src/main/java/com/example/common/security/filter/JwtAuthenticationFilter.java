@@ -20,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * JWT Authentication Filter for Services
@@ -76,8 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return List.of();
         }
 
-        return List.of(rolesHeader.split(","))
-                .stream()
+        return Stream.of(rolesHeader.split(","))
                 .map(role -> new SimpleGrantedAuthority(role.trim()))
                 .collect(Collectors.toList());
     }
