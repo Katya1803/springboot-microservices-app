@@ -1,4 +1,4 @@
-package com.example.auth.config;
+package com.example.user.config;
 
 import com.example.common.security.filter.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * Security Configuration for User Service
+ * Enables method-level security with @PreAuthorize
+ */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -28,17 +32,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/auth/login",
-                                "/auth/register",
-                                "/auth/refresh",
-                                "/auth/health",
-                                "/oauth/token",
-                                "/oauth/health",
-                                "/actuator/**",
-                                "/users/profiles/health",
-                                "/h2-console/**"
-                        ).permitAll()
+                        .requestMatchers("/profiles/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

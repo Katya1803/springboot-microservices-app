@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: user-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/user_db
+    username: postgres
+    password: x
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # create-drop for first run, then update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+
+server:
+  port: 8082
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-for-jwt-token-generation-and-validation-min-32-chars}
+  access-token-expiration: 900000      # 15 minutes
+  refresh-token-expiration: 604800000  # 7 days
+  service-token-expiration: 300000     # 5 minutes
+
+# Logging
+logging:
+  level:
+    com.example.user: DEBUG
+    com.example.common: DEBUG
+    org.springframework.security: DEBUG
