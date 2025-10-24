@@ -1,10 +1,6 @@
 package com.example.auth.controller;
 
-import com.example.auth.dto.LoginRequest;
-import com.example.auth.dto.LoginResponse;
-import com.example.auth.dto.RefreshTokenRequest;
-import com.example.auth.dto.RegisterRequest;
-import com.example.auth.dto.RegisterResponse;
+import com.example.auth.dto.*;
 import com.example.auth.service.AuthService;
 import com.example.common.constant.SecurityConstants;
 import com.example.common.dto.ApiResponse;
@@ -16,6 +12,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Authentication Controller
+ * Handles user registration, login, OTP verification, token management
+ */
 @Slf4j
 @RestController
 @RequestMapping("/auth")
@@ -26,6 +26,7 @@ public class AuthController {
 
     /**
      * POST /auth/register
+     * Register new user (status: PENDING)
      */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<RegisterResponse>> register(
@@ -37,11 +38,46 @@ public class AuthController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(response, "Registration successful"));
+                .body(ApiResponse.success(response, response.getMessage()));
+    }
+
+    /**
+     * POST /auth/verify-otp
+     * Verify OTP and activate account (auto-login)
+     */
+    @PostMapping("/verify-otp")
+    public ResponseEntity<ApiResponse<LoginResponse>> verifyOtp(
+            @Valid @RequestBody VerifyOtpRequest request) {
+
+        log.info("OTP verification request for email: {}", request.getEmail());
+
+        LoginResponse response = authService.verifyOtp(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(response, "Email verified successfully. You are now logged in.")
+        );
+    }
+
+    /**
+     * POST /auth/resend-otp
+     * Resend OTP to email
+     */
+    @PostMapping("/resend-otp")
+    public ResponseEntity<ApiResponse<Void>> resendOtp(
+            @Valid @RequestBody ResendOtpRequest request) {
+
+        log.info("Resend OTP request for email: {}", request.getEmail());
+
+        authService.resendOtp(request);
+
+        return ResponseEntity.ok(
+                ApiResponse.success("OTP sent successfully. Please check your email.")
+        );
     }
 
     /**
      * POST /auth/login
+     * User login (only ACTIVE users)
      */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(
@@ -58,6 +94,7 @@ public class AuthController {
 
     /**
      * POST /auth/refresh
+     * Refresh access token
      */
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<LoginResponse>> refresh(
@@ -74,6 +111,7 @@ public class AuthController {
 
     /**
      * POST /auth/logout
+     * Logout and revoke tokens
      */
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
@@ -93,6 +131,7 @@ public class AuthController {
 
     /**
      * GET /auth/health
+     * Health check
      */
     @GetMapping("/health")
     public ResponseEntity<ApiResponse<String>> health() {

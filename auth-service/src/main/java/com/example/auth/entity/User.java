@@ -45,9 +45,20 @@ public class User {
     @Column(nullable = false)
     private String roles; // Comma-separated: ROLE_ADMIN,ROLE_USER
 
+    /**
+     * User Status:
+     * - PENDING: Registered but not verified email
+     * - ACTIVE: Email verified, can login
+     * - INACTIVE: Deactivated
+     * - LOCKED: Account locked
+     */
     @Column(nullable = false, length = 20)
     @Builder.Default
-    private String status = "ACTIVE"; // ACTIVE, INACTIVE, LOCKED
+    private String status = "PENDING"; // PENDING, ACTIVE, INACTIVE, LOCKED
+
+    @Column(name = "email_verified", nullable = false)
+    @Builder.Default
+    private Boolean emailVerified = false;
 
     @Column(name = "token_version", nullable = false)
     @Builder.Default
@@ -67,10 +78,17 @@ public class User {
     }
 
     /**
-     * Check if user is active
+     * Check if user is active and can login
      */
     public boolean isActive() {
         return "ACTIVE".equals(status);
+    }
+
+    /**
+     * Check if user is pending email verification
+     */
+    public boolean isPending() {
+        return "PENDING".equals(status);
     }
 
     /**
@@ -78,5 +96,14 @@ public class User {
      */
     public String[] getRolesArray() {
         return roles != null ? roles.split(",") : new String[0];
+    }
+
+    /**
+     * Activate user after email verification
+     */
+    public void activate() {
+        this.status = "ACTIVE";
+        this.emailVerified = true;
+        this.updatedAt = Instant.now();
     }
 }

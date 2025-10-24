@@ -24,7 +24,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update  # create-drop for first run, then update
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -37,7 +37,7 @@ spring:
   # SQL initialization
   sql:
     init:
-      mode: always  # Run data.sql on startup
+      mode: always
       continue-on-error: false
 
   # Redis
@@ -75,6 +75,20 @@ jwt:
   service-token-expiration: 300000     # 5 minutes
   issuer: auth-service
 
+# OTP Configuration
+otp:
+  expiration: 300000  # 5 minutes
+  length: 6
+
+# OAuth2 Configuration for Service-to-Service
+oauth2:
+  client:
+    auth-service-url: http://localhost:8081
+    token-endpoint: /oauth/token
+    client-id: auth-service
+    client-secret: auth-service-secret
+    scope: email:send
+
 # Logging
 logging:
   level:
@@ -83,6 +97,10 @@ logging:
     org.springframework.security: INFO
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.web.client.RestTemplate: DEBUG
+    org.springframework.http.client: DEBUG
+    org.springframework.web: DEBUG
+    com.example.common.client.BaseOAuth2TokenProvider: DEBUG
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

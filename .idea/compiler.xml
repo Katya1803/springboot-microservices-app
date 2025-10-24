@@ -12,6 +12,7 @@
         <module name="user-service" />
         <module name="common" />
         <module name="eureka-server" />
+        <module name="email-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="api-gateway" options="-parameters" />
       <module name="auth-service" options="-parameters" />
       <module name="common" options="-parameters" />
+      <module name="email-service" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="microservices-security" options="" />
       <module name="user-service" options="-parameters" />

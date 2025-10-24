@@ -82,6 +82,7 @@ public abstract class BaseOAuth2TokenProvider implements OAuth2TokenProvider {
                     request,
                     OAuth2TokenResponse.class
             );
+            log.info("Token endpoint response body: {}", response.getBody());
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 String token = response.getBody().getAccessToken();

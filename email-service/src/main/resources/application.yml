@@ -1,0 +1,62 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: email-service
+
+  # Mail Configuration
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: katyavu.work@gmail.com
+    password: mbsveienlpglkjzo
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+  # Thymeleaf Configuration
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+    cache: false
+
+# Eureka Client
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# JWT Configuration (for service-to-service auth)
+jwt:
+  secret: Wm9rRjV1cT9nTjM2SHN0SmN3TXE1U0t3RzYwY0lDQlNObmF5X3M2RjQxVXR3T2lycWc
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
+  service-token-expiration: 300000
+  issuer: auth-service
+
+# Email Configuration
+email:
+  from:
+    address: katyavu.work@gmail.com
+    name: Microservices Security
+
+# Logging
+logging:
+  level:
+    com.example.email: DEBUG
+    com.example.common: DEBUG
+    org.springframework.mail: DEBUG

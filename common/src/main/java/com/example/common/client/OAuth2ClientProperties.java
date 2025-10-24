@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
  * Each service should configure its own credentials
  */
 @Data
-@Component
-@ConfigurationProperties(prefix = "oauth2.client")
 public class OAuth2ClientProperties {
 
     /**

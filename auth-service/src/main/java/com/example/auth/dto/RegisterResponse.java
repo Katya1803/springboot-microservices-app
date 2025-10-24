@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Register Response DTO
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -16,5 +19,12 @@ public class RegisterResponse {
     private String email;
     private String firstName;
     private String lastName;
+
+    /**
+     * Indicates if email verification is needed
+     */
+    @Builder.Default
+    private boolean needsVerification = true;
+
     private String message;
 }
