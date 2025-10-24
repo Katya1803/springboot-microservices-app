@@ -1,9 +1,10 @@
-// auth-service/src/main/java/com/example/auth/service/AuthService.java
 package com.example.auth.service;
 
 import com.example.auth.dto.LoginRequest;
 import com.example.auth.dto.LoginResponse;
 import com.example.auth.dto.RefreshTokenRequest;
+import com.example.auth.dto.RegisterRequest;
+import com.example.auth.dto.RegisterResponse;
 import com.example.auth.entity.User;
 import com.example.auth.repository.jpa.UserRepository;
 import com.example.common.constant.ErrorCode;
@@ -15,10 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Authentication Service
- * Handles user login, token refresh, and logout
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -31,29 +28,65 @@ public class AuthService {
     private final TokenBlacklistService tokenBlacklistService;
 
     /**
+     * User registration
+     */
+    @Transactional
+    public RegisterResponse register(RegisterRequest request) {
+        log.info("Registration attempt for username: {}", request.getUsername());
+
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Email already exists");
+        }
+
+        User user = User.builder()
+                .username(request.getUsername())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .email(request.getEmail())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .roles("ROLE_USER")
+                .status("ACTIVE")
+                .tokenVersion(1)
+                .build();
+
+        user = userRepository.save(user);
+
+        log.info("User registered successfully: {}", user.getUsername());
+
+        return RegisterResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .message("Registration successful")
+                .build();
+    }
+
+    /**
      * User login
      */
     @Transactional
     public LoginResponse login(LoginRequest request) {
         log.info("Login attempt for user: {}", request.getUsername());
 
-        // Find user by username
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UnauthorizedException(ErrorCode.INVALID_CREDENTIALS.getMessage()));
 
-        // Verify password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("Invalid password for user: {}", request.getUsername());
             throw new UnauthorizedException(ErrorCode.INVALID_CREDENTIALS.getMessage());
         }
 
-        // Check if user is active
         if (!user.isActive()) {
             log.warn("User account is not active: {}", request.getUsername());
             throw new UnauthorizedException("User account is not active");
         }
 
-        // Generate tokens
         String accessToken = jwtTokenGenerator.generateAccessToken(user);
         String refreshToken = refreshTokenService.createRefreshToken(user, request.getDeviceId());
 
@@ -80,23 +113,18 @@ public class AuthService {
     public LoginResponse refresh(RefreshTokenRequest request) {
         log.debug("Token refresh attempt");
 
-        // Verify refresh token
         String userId = refreshTokenService.verifyRefreshToken(request.getRefreshToken());
 
-        // Get user
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new InvalidTokenException("User not found"));
 
-        // Check if user is still active
         if (!user.isActive()) {
             refreshTokenService.revokeRefreshToken(request.getRefreshToken());
             throw new UnauthorizedException("User account is not active");
         }
 
-        // Generate new tokens
         String newAccessToken = jwtTokenGenerator.generateAccessToken(user);
 
-        // Rotate refresh token (revoke old, create new)
         refreshTokenService.revokeRefreshToken(request.getRefreshToken());
         String newRefreshToken = refreshTokenService.createRefreshToken(user, null);
 
@@ -117,10 +145,7 @@ public class AuthService {
     public void logout(String accessToken, String userId) {
         log.info("Logout for user: {}", userId);
 
-        // Blacklist access token
         tokenBlacklistService.blacklistToken(accessToken);
-
-        // Revoke all refresh tokens for user
         refreshTokenService.revokeAllUserTokens(userId);
 
         log.info("Logout successful for user: {}", userId);

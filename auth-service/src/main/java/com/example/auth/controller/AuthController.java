@@ -3,6 +3,8 @@ package com.example.auth.controller;
 import com.example.auth.dto.LoginRequest;
 import com.example.auth.dto.LoginResponse;
 import com.example.auth.dto.RefreshTokenRequest;
+import com.example.auth.dto.RegisterRequest;
+import com.example.auth.dto.RegisterResponse;
 import com.example.auth.service.AuthService;
 import com.example.common.constant.SecurityConstants;
 import com.example.common.dto.ApiResponse;
@@ -10,13 +12,10 @@ import com.example.common.security.annotation.CurrentUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * Authentication Controller
- * Handles user authentication endpoints
- */
 @Slf4j
 @RestController
 @RequestMapping("/auth")
@@ -26,7 +25,22 @@ public class AuthController {
     private final AuthService authService;
 
     /**
-     * User login
+     * POST /auth/register
+     */
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<RegisterResponse>> register(
+            @Valid @RequestBody RegisterRequest request) {
+
+        log.info("Registration request for username: {}", request.getUsername());
+
+        RegisterResponse response = authService.register(request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success(response, "Registration successful"));
+    }
+
+    /**
      * POST /auth/login
      */
     @PostMapping("/login")
@@ -43,7 +57,6 @@ public class AuthController {
     }
 
     /**
-     * Refresh access token
      * POST /auth/refresh
      */
     @PostMapping("/refresh")
@@ -60,7 +73,6 @@ public class AuthController {
     }
 
     /**
-     * Logout (revoke tokens)
      * POST /auth/logout
      */
     @PostMapping("/logout")
@@ -70,7 +82,6 @@ public class AuthController {
 
         log.info("Logout request for user: {}", userId);
 
-        // Extract token from "Bearer <token>"
         String token = authHeader.replace(SecurityConstants.JWT_PREFIX, "");
 
         authService.logout(token, userId);
@@ -81,7 +92,6 @@ public class AuthController {
     }
 
     /**
-     * Health check
      * GET /auth/health
      */
     @GetMapping("/health")

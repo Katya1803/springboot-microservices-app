@@ -5,6 +5,7 @@ package com.example.common.constant;
  */
 public final class SecurityConstants {
 
+
     private SecurityConstants() {
         // Prevent instantiation
     }
@@ -42,6 +43,9 @@ public final class SecurityConstants {
      * Request ID header (for tracing)
      */
     public static final String HEADER_REQUEST_ID = "X-Request-Id";
+
+    public static final String HEADER_USER_EMAIL = "X-User-Email";
+
 
     // ========== Token Type Constants ==========
 

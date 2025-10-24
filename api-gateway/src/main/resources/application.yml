@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  # Redis Configuration (Reactive)
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: 6379
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+  # Cloud Gateway Configuration
+  cloud:
+    gateway:
+      # Global CORS Configuration
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "*"
+            allowed-methods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: false
+            max-age: 3600
+
+      # Discovery Locator (optional - for automatic routing)
+      discovery:
+        locator:
+          enabled: false  # We use manual routes
+          lower-case-service-id: true
+
+# Eureka Client Configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_SERVER:http://localhost:8761/eureka/}
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
+
+# JWT Configuration (from common module)
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-change-this-in-production-your-256-bit-secret}
+  issuer: microservices-security
+  access-token-expiration: 900000      # 15 minutes
+  refresh-token-expiration: 2592000000  # 30 days
+  service-token-expiration: 300000      # 5 minutes
+
+# Rate Limiting Configuration
+rate-limit:
+  default-limit: 100
+  default-duration: 60  # seconds
+  auth-login-limit: 5
+  auth-login-duration: 900  # 15 minutes
+
+# Logging
+logging:
+  level:
+    root: INFO
+    com.example.gateway: DEBUG
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.web.reactive: DEBUG
