@@ -54,7 +54,7 @@ eureka:
 
 # JWT Configuration (from common module)
 jwt:
-  secret: ${JWT_SECRET:your-256-bit-secret-key-change-this-in-production-your-256-bit-secret}
+  secret: Wm9rRjV1cT9nTjM2SHN0SmN3TXE1U0t3RzYwY0lDQlNObmF5X3M2RjQxVXR3T2lycWc
   issuer: microservices-security
   access-token-expiration: 900000      # 15 minutes
   refresh-token-expiration: 2592000000  # 30 days

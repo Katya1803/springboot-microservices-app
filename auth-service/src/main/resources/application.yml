@@ -69,7 +69,7 @@ eureka:
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:microservices-security-jwt-secret-key-must-be-at-least-256-bits-long-for-hs256}
+  secret: Wm9rRjV1cT9nTjM2SHN0SmN3TXE1U0t3RzYwY0lDQlNObmF5X3M2RjQxVXR3T2lycWc
   access-token-expiration: 900000      # 15 minutes
   refresh-token-expiration: 604800000  # 7 days
   service-token-expiration: 300000     # 5 minutes

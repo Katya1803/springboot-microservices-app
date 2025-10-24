@@ -47,7 +47,7 @@ public class GatewayConfig {
                 .route("user-service", r -> r
                         .path("/api/users/**")
                         .filters(f -> f
-                                .stripPrefix(1)  // Remove /api, keep /users
+                                .stripPrefix(2)  // Remove /api/users
                                 .retry(config -> config.setRetries(2))
                         )
                         .uri("lb://user-service")

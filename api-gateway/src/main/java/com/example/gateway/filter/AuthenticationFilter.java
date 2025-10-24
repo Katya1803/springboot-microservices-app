@@ -41,11 +41,9 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     // Public paths that don't require authentication
     private static final List<String> PUBLIC_PATHS = List.of(
-            "/auth/login",
-            "/auth/register",
-            "/auth/refresh",
-            "/auth/health",
-            "/test/public"
+            "/auth/",  // All auth endpoints are public
+            "/test/public",
+            "/api/users/profiles/health"
     );
 
     public AuthenticationFilter(
@@ -64,9 +62,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
         // Skip authentication for public paths
         if (isPublicPath(path)) {
-            log.debug("Public path accessed: {}", path);
+            log.debug("Public path accessed, skipping authentication: {}", path);
             return chain.filter(exchange);
         }
+
+        log.debug("Protected path, authentication required: {}", path);
 
         // Extract token from header
         String token = extractToken(request);

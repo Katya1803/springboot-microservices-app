@@ -36,7 +36,6 @@ public class SecurityConfig {
                                 "/oauth/token",
                                 "/oauth/health",
                                 "/actuator/**",
-                                "/users/profiles/health",
                                 "/h2-console/**"
                         ).permitAll()
                         .anyRequest().authenticated()
