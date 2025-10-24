@@ -1,8 +1,8 @@
 package com.example.common.client;
 
 import com.example.common.security.jwt.JwtTokenValidator;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
@@ -124,10 +124,21 @@ public abstract class BaseOAuth2TokenProvider implements OAuth2TokenProvider {
      * OAuth2 Token Response DTO
      */
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     public static class OAuth2TokenResponse {
+
+        @JsonProperty("access_token")
         private String accessToken;
+
+        @JsonProperty("token_type")
         private String tokenType;
+
+        @JsonProperty("expires_in")
         private Long expiresIn;
+
         private String scope;
     }
+
 }
