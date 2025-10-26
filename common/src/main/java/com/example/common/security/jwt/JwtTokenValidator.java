@@ -82,10 +82,18 @@ public class JwtTokenValidator {
     /**
      * Extract roles from token
      */
-    @SuppressWarnings("unchecked")
+
     public List<String> getRoles(String token) {
         Claims claims = getClaims(token);
-        return claims.get("roles", List.class);
+        List<String> roles = claims.get("roles", List.class);
+
+        // FIX: Return default role for service tokens
+        if (roles == null || roles.isEmpty()) {
+            log.warn("⚠️ No roles in token, using default ROLE_SERVICE");
+            return List.of("ROLE_SERVICE");
+        }
+
+        return roles;
     }
 
     /**

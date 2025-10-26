@@ -12,10 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * JWT Token Generator
@@ -68,6 +65,7 @@ public class JwtTokenGenerator {
         claims.put("token_type", SecurityConstants.TOKEN_TYPE_SERVICE);
         claims.put("client_id", clientId);
         claims.put("scope", scope);
+        claims.put("roles", List.of("ROLE_SERVICE")); // ← ADD THIS LINE!
 
         String token = Jwts.builder()
                 .subject(clientId)
