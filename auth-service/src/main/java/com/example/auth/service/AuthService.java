@@ -29,6 +29,7 @@ public class AuthService {
     private final TokenBlacklistService tokenBlacklistService;
     private final OtpService otpService;
     private final EmailServiceClient emailServiceClient;
+    private final UserEventPublisher userEventPublisher;
 
     /**
      * User registration with OTP
@@ -115,8 +116,13 @@ public class AuthService {
         // Activate user
         user.activate();
         userRepository.save(user);
-
         log.info("User activated successfully: {}", user.getUsername());
+
+        try {
+            userEventPublisher.publishUserVerifiedEvent(user);
+        } catch (Exception e) {
+            log.error("Failed to publish user verification event: {}", e.getMessage(), e);
+        }
 
         // Auto-login: Generate tokens
         String accessToken = jwtTokenGenerator.generateAccessToken(user);

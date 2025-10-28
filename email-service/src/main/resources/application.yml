@@ -20,7 +20,17 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
+  # Kafka config
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: email-service-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      properties:
+        spring.json.trusted.packages: com.example.common.event
   # Thymeleaf Configuration
   thymeleaf:
     prefix: classpath:/templates/
